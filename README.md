@@ -32,6 +32,5 @@
 <img width="4746" height="2781" alt="deepseek_mermaid_20260527_622f63" src="https://github.com/user-attachments/assets/2a343bad-9a08-4213-bc65-e4d89b3489bb" />
 
 **Live Link:**
-https://meetwise-etk7.onrender.com/login?next=%2F
-
+https://meetwise-etk7.onrender.com
 
