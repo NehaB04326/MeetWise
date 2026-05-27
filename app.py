@@ -3,6 +3,7 @@ import json
 import logging
 from dotenv import load_dotenv
 
+# Load environment variables FIRST
 load_dotenv()
 
 from flask import Flask, request, render_template, jsonify, redirect, url_for, flash
@@ -17,26 +18,30 @@ from slack_client import send_action_dm
 from meeting_scoring import compute_meeting_score
 
 # ------------------------------------------------------------
-# Auto‑populate name_mapping from environment variable (if table is empty)
+# Auto‑populate name_mapping from environment variables SLACK_USER_*
 def populate_default_mapping():
     from database import get_db
-    default_mapping_json = os.getenv("DEFAULT_SLACK_MAPPING", "{}")
-    try:
-        default_mapping = json.loads(default_mapping_json)
-    except json.JSONDecodeError:
-        print("Warning: DEFAULT_SLACK_MAPPING is not valid JSON. Skipping auto‑population.")
-        return
-    if not default_mapping:
+    # Build mapping from individual env vars (prefix SLACK_USER_)
+    mapping = {}
+    for key, value in os.environ.items():
+        if key.startswith("SLACK_USER_"):
+            # Extract name after "SLACK_USER_" (e.g., "JOHN" -> "john")
+            name = key[11:].lower()
+            mapping[name] = value
+    if not mapping:
+        print("No SLACK_USER_* environment variables found. Skipping auto‑population.")
         return
     with get_db() as conn:
         count = conn.execute("SELECT COUNT(*) FROM name_mapping").fetchone()[0]
         if count == 0:
-            for raw_name, slack_id in default_mapping.items():
+            for raw_name, slack_id in mapping.items():
                 conn.execute(
                     "INSERT OR IGNORE INTO name_mapping (raw_name, slack_id) VALUES (?, ?)",
                     (raw_name, slack_id)
                 )
-            print(f"Inserted {len(default_mapping)} default Slack user mapping(s).")
+            print(f"Inserted {len(mapping)} default Slack user mapping(s).")
+        else:
+            print("name_mapping table already has data – skipping auto‑population.")
 # ------------------------------------------------------------
 
 init_db()
@@ -92,13 +97,16 @@ def get_name_mapping():
         return {row['raw_name']: row['slack_id'] for row in rows}
 
 def resolve_slack_id(person_raw):
+    """Return Slack ID using case‑insensitive exact match then fuzzy."""
     mapping = get_name_mapping()
     if not mapping:
         return None
+    # Case‑insensitive exact match
     lower_person = person_raw.lower()
     for key, sid in mapping.items():
         if key.lower() == lower_person:
             return sid
+    # Fuzzy match
     best_match = process.extractOne(person_raw, mapping.keys(), score_cutoff=70)
     if best_match:
         return mapping[best_match[0]]
