@@ -12,16 +12,14 @@
             --navy:      #0d1b2a;
             --blue:      #2563eb;
             --blue-dk:   #1d4ed8;
-            --blue-lt:   #eff6ff;
             --border:    #e2e8f0;
             --surface:   #f8fafc;
             --white:     #ffffff;
-            --ink:       #374669;
-            --ink-2:     #1e293b;
+            --ink:       #1e293b;
+            --ink-2:     #0f172a;
             --muted:     #64748b;
             --green:     #16a34a;
             --green-lt:  #f0fdf4;
-            --amber:     #d97706;
             --red:       #dc2626;
             --red-lt:    #fef2f2;
             --radius:    10px;
@@ -35,7 +33,7 @@
             min-height: 100vh;
         }
 
-        /* ── Topbar ── */
+        /* ── Topbar (fully visible text) ── */
         .topbar {
             background: var(--navy);
             height: 52px;
@@ -51,39 +49,56 @@
             width: 26px; height: 26px;
             background: var(--blue);
             border-radius: 7px;
-            display: flex; align-items: center; justify-content: center;
+            display: flex;
+            align-items: center;
+            justify-content: center;
         }
         .topbar-icon svg { width: 14px; height: 14px; }
-        .topbar-name { font-size: 14px; font-weight: 600; color: #fff; letter-spacing: -0.01em; }
-        .topbar-sep { width: 1px; height: 18px; background: rgba(255,255,255,0.15); margin: 0 8px; }
-        .topbar-sub { font-size: 13px; color: rgba(255,255,255,0.45); flex: 1; }
+        .topbar-name { 
+            font-size: 15px; 
+            font-weight: 600; 
+            color: #ffffff;   /* pure white */
+            letter-spacing: -0.01em;
+        }
+        .topbar-sep { 
+            width: 1px; 
+            height: 18px; 
+            background: rgba(255,255,255,0.3); 
+            margin: 0 8px; 
+        }
+        .topbar-sub { 
+            font-size: 13px; 
+            color: #e2e8f0;   /* light but readable */
+            font-weight: 500;
+        }
         .topbar-logout {
             font-size: 12.5px;
-            color: rgba(255,255,255,0.5);
+            color: #f1f5f9;   /* bright, readable */
             text-decoration: none;
             padding: 5px 12px;
-            border: 1px solid rgba(255,255,255,0.12);
+            border: 1px solid rgba(255,255,255,0.2);
             border-radius: var(--radius);
             display: flex;
             align-items: center;
             gap: 6px;
             transition: all 0.15s;
         }
-        .topbar-logout:hover { color: white; border-color: rgba(255,255,255,0.25); background: rgba(255,255,255,0.07); }
-        .topbar-logout svg { width: 13px; height: 13px; }
+        .topbar-logout:hover { 
+            color: white; 
+            border-color: rgba(255,255,255,0.5); 
+            background: rgba(255,255,255,0.1); 
+        }
+        .topbar-logout svg { width: 13px; height: 13px; stroke: currentColor; }
 
-        /* ── Page ── */
+        /* rest of the page unchanged – keep your existing styles for card, form, etc. */
         .page {
             max-width: 840px;
             margin: 0 auto;
             padding: 2.5rem 1.5rem 4rem;
         }
-
         .page-header { margin-bottom: 2rem; }
         .page-title { font-size: 22px; font-weight: 600; color: var(--ink); letter-spacing: -0.02em; }
         .page-sub { font-size: 13.5px; color: var(--muted); margin-top: 4px; }
-
-        /* ── Card ── */
         .card {
             background: var(--white);
             border: 1px solid var(--border);
@@ -103,8 +118,6 @@
             gap: 7px;
         }
         .card-title svg { color: var(--blue); }
-
-        /* ── Form ── */
         .form-grid {
             display: grid;
             grid-template-columns: 1fr 1fr;
@@ -113,14 +126,12 @@
         }
         .full-width { grid-column: span 2; }
         .fg { display: flex; flex-direction: column; gap: 5px; }
-
         label {
             font-size: 12px;
             font-weight: 500;
             color: var(--muted);
             letter-spacing: 0.01em;
         }
-
         input[type=text],
         input[type=number],
         textarea {
@@ -134,9 +145,7 @@
             background: var(--white);
             transition: border-color 0.15s, box-shadow 0.15s;
         }
-        input[type=text]:focus,
-        input[type=number]:focus,
-        textarea:focus {
+        input:focus {
             outline: none;
             border-color: var(--blue);
             box-shadow: 0 0 0 3px rgba(37,99,235,0.1);
@@ -161,8 +170,6 @@
             cursor: pointer;
         }
         .input-hint { font-size: 11px; color: var(--muted); margin-top: 3px; }
-
-        /* ── Buttons ── */
         .btn {
             display: inline-flex;
             align-items: center;
@@ -189,8 +196,6 @@
         .action-buttons { display: flex; gap: 10px; margin-top: 0.75rem; }
         .action-buttons .btn { flex: 1; }
         button:disabled { opacity: 0.6; cursor: not-allowed; }
-
-        /* ── Loader ── */
         .loader {
             width: 14px; height: 14px;
             border: 2px solid rgba(255,255,255,0.3);
@@ -199,8 +204,6 @@
             animation: spin 0.55s linear infinite;
         }
         @keyframes spin { to { transform: rotate(360deg); } }
-
-        /* ── Result ── */
         #resultContainer { display: none; }
         .result-header {
             display: flex;
@@ -220,7 +223,6 @@
             color: var(--green);
         }
         .status-pill.err { background: var(--red-lt); color: var(--red); }
-
         .result-area {
             background: #f1f5f9;
             border: 1px solid var(--border);
@@ -235,8 +237,6 @@
             max-height: 320px;
             overflow-y: auto;
         }
-
-        /* ── Score ── */
         .score-section {
             margin-top: 1.25rem;
             border-top: 1px solid var(--border);
@@ -259,9 +259,8 @@
         }
         .score-denom { font-size: 16px; color: var(--muted); }
         .score-label { font-size: 12px; color: var(--muted); margin-top: 5px; }
-        .score-bar-wrap { height: 4px; background: var(--border); border-radius: 20px; overflow: hidden; margin-top: 8px; }
+        .score-bar-wrap { height: 4px; background: var(--border); border-radius: 20px; overflow: hidden; margin-top: 8px; width: 100px; }
         .score-bar-fill { height: 100%; border-radius: 20px; transition: width 0.5s ease; }
-
         .score-pills { display: flex; flex-wrap: wrap; gap: 8px; flex: 1; align-items: flex-start; padding-top: 4px; }
         .score-pill {
             background: var(--surface);
@@ -272,8 +271,6 @@
             color: var(--muted);
         }
         .score-pill strong { color: var(--ink-2); font-weight: 500; }
-
-        /* ── Footer ── */
         .footer {
             text-align: center;
             font-size: 12px;
@@ -282,8 +279,6 @@
             padding-top: 1.5rem;
             border-top: 1px solid var(--border);
         }
-
-        /* ── Responsive ── */
         @media (max-width: 600px) {
             .form-grid { grid-template-columns: 1fr; }
             .full-width { grid-column: span 1; }
@@ -295,7 +290,6 @@
 </head>
 <body>
 
-<!-- Topbar -->
 <nav class="topbar">
     <div class="topbar-icon">
         <svg viewBox="0 0 14 14" fill="none" stroke="white" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round">
@@ -315,13 +309,11 @@
 </nav>
 
 <div class="page">
-
     <div class="page-header">
         <h1 class="page-title">Meeting Action Intelligence</h1>
         <p class="page-sub">Upload a transcript — AI extracts action items and sends Slack reminders with an effectiveness score.</p>
     </div>
 
-    <!-- Upload card -->
     <div class="card">
         <div class="card-title">
             <svg width="14" height="14" viewBox="0 0 14 14" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round">
@@ -367,7 +359,6 @@
         </div>
     </div>
 
-    <!-- Result card -->
     <div id="resultContainer">
         <div class="card">
             <div class="result-header">
@@ -375,8 +366,6 @@
                 <span id="statusPill" class="status-pill">Processed</span>
             </div>
             <div id="resultContent" class="result-area"></div>
-
-            <!-- Score -->
             <div class="score-section" id="scoreSection">
                 <div class="score-inner">
                     <div class="score-left">
@@ -395,8 +384,9 @@
         </div>
     </div>
 
-   
-
+    <div class="footer">
+        Powered by Groq LLM · Slack integration · Real‑time task extraction
+    </div>
 </div>
 
 <script>
