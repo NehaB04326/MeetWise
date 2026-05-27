@@ -1,0 +1,15 @@
+services:
+  - type: web
+    name: meetwise-ai
+    env: python
+    buildCommand: pip install -r requirements.txt
+    startCommand: gunicorn app:app
+    envVars:
+      - key: DATABASE_PATH
+        value: /var/data/actions.db
+      - key: PYTHON_VERSION
+        value: 3.12.0
+    disks:
+      - name: sqlite-data
+        mountPath: /var/data
+        sizeGB: 1
