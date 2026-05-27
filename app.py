@@ -3,7 +3,6 @@ import json
 import logging
 from dotenv import load_dotenv
 
-# Load environment variables FIRST
 load_dotenv()
 
 from flask import Flask, request, render_template, jsonify, redirect, url_for, flash
@@ -18,34 +17,29 @@ from slack_client import send_action_dm
 from meeting_scoring import compute_meeting_score
 
 # ------------------------------------------------------------
-# Auto‑populate name_mapping from environment variables SLACK_USER_*
-def populate_default_mapping():
+# Force sync of name_mapping from SLACK_USER_* environment variables
+def sync_name_mapping():
     from database import get_db
-    # Build mapping from individual env vars (prefix SLACK_USER_)
     mapping = {}
     for key, value in os.environ.items():
         if key.startswith("SLACK_USER_"):
-            # Extract name after "SLACK_USER_" (e.g., "JOHN" -> "john")
             name = key[11:].lower()
             mapping[name] = value
     if not mapping:
-        print("No SLACK_USER_* environment variables found. Skipping auto‑population.")
+        print("No SLACK_USER_* env vars found. Skipping sync.")
         return
     with get_db() as conn:
-        count = conn.execute("SELECT COUNT(*) FROM name_mapping").fetchone()[0]
-        if count == 0:
-            for raw_name, slack_id in mapping.items():
-                conn.execute(
-                    "INSERT OR IGNORE INTO name_mapping (raw_name, slack_id) VALUES (?, ?)",
-                    (raw_name, slack_id)
-                )
-            print(f"Inserted {len(mapping)} default Slack user mapping(s).")
-        else:
-            print("name_mapping table already has data – skipping auto‑population.")
+        for raw_name, slack_id in mapping.items():
+            # Replace or insert – ensures the ID is always correct
+            conn.execute(
+                "INSERT OR REPLACE INTO name_mapping (raw_name, slack_id) VALUES (?, ?)",
+                (raw_name, slack_id)
+            )
+        print(f"Synced {len(mapping)} Slack user mapping(s) from environment variables.")
 # ------------------------------------------------------------
 
 init_db()
-populate_default_mapping()
+sync_name_mapping()   # runs every startup, ensures mapping is up‑to‑date
 
 app = Flask(__name__)
 
@@ -86,7 +80,6 @@ def login():
 def logout():
     logout_user()
     return redirect(url_for('login'))
-# -------------------------------------------------
 
 logging.basicConfig(level=logging.INFO)
 
@@ -97,16 +90,13 @@ def get_name_mapping():
         return {row['raw_name']: row['slack_id'] for row in rows}
 
 def resolve_slack_id(person_raw):
-    """Return Slack ID using case‑insensitive exact match then fuzzy."""
     mapping = get_name_mapping()
     if not mapping:
         return None
-    # Case‑insensitive exact match
     lower_person = person_raw.lower()
     for key, sid in mapping.items():
         if key.lower() == lower_person:
             return sid
-    # Fuzzy match
     best_match = process.extractOne(person_raw, mapping.keys(), score_cutoff=70)
     if best_match:
         return mapping[best_match[0]]
@@ -118,6 +108,13 @@ def index():
     if request.method == "POST":
         return redirect(url_for('index'))
     return render_template("index.html")
+
+# Debug endpoint – shows current mapping and last extracted person (optional)
+@app.route("/debug/mapping")
+@login_required
+def debug_mapping():
+    mapping = get_name_mapping()
+    return jsonify(mapping)
 
 @app.route("/upload", methods=["POST"])
 @login_required
@@ -142,6 +139,8 @@ def upload_transcript():
         person_raw = item.get("person", "unassigned")
         deadline = item.get("deadline")
         slack_id = resolve_slack_id(person_raw) if person_raw != "unassigned" else None
+        # Debug print (visible in Render logs)
+        print(f"Resolved '{person_raw}' -> Slack ID: {slack_id}")
         item_id = add_action_item(meeting_name, task, person_raw, slack_id, deadline)
         saved.append({"id": item_id, "task": task, "person": person_raw, "deadline": deadline, "slack_id": slack_id})
         if slack_id:
