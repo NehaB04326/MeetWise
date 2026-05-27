@@ -1,13 +1,13 @@
 import os
+import json
 import logging
 from dotenv import load_dotenv
 
-# Load environment variables FIRST
 load_dotenv()
 
 from flask import Flask, request, render_template, jsonify, redirect, url_for, flash
 from flask_login import LoginManager, UserMixin, login_user, logout_user, login_required, current_user
-from thefuzz import process   # pure Python fuzzy matching
+from thefuzz import process
 import secrets
 
 from database import init_db, add_action_item, mark_completed
@@ -16,7 +16,32 @@ from gpt_extractor import extract_action_items
 from slack_client import send_action_dm
 from meeting_scoring import compute_meeting_score
 
+# ------------------------------------------------------------
+# Auto‑populate name_mapping from environment variable (if table is empty)
+def populate_default_mapping():
+    from database import get_db
+    default_mapping_json = os.getenv("DEFAULT_SLACK_MAPPING", "{}")
+    try:
+        default_mapping = json.loads(default_mapping_json)
+    except json.JSONDecodeError:
+        print("Warning: DEFAULT_SLACK_MAPPING is not valid JSON. Skipping auto‑population.")
+        return
+    if not default_mapping:
+        return
+    with get_db() as conn:
+        count = conn.execute("SELECT COUNT(*) FROM name_mapping").fetchone()[0]
+        if count == 0:
+            for raw_name, slack_id in default_mapping.items():
+                conn.execute(
+                    "INSERT OR IGNORE INTO name_mapping (raw_name, slack_id) VALUES (?, ?)",
+                    (raw_name, slack_id)
+                )
+            print(f"Inserted {len(default_mapping)} default Slack user mapping(s).")
+# ------------------------------------------------------------
+
 init_db()
+populate_default_mapping()
+
 app = Flask(__name__)
 
 # ------------------ AUTH SETUP ------------------
@@ -67,16 +92,13 @@ def get_name_mapping():
         return {row['raw_name']: row['slack_id'] for row in rows}
 
 def resolve_slack_id(person_raw):
-    """Return Slack ID for a person name using case‑insensitive exact match first, then fuzzy."""
     mapping = get_name_mapping()
     if not mapping:
         return None
-    # 1. Case‑insensitive exact match
     lower_person = person_raw.lower()
     for key, sid in mapping.items():
         if key.lower() == lower_person:
             return sid
-    # 2. Fuzzy matching on original keys (case‑sensitive but fuzzy handles variations)
     best_match = process.extractOne(person_raw, mapping.keys(), score_cutoff=70)
     if best_match:
         return mapping[best_match[0]]
@@ -97,12 +119,10 @@ def upload_transcript():
     if not transcript:
         return jsonify({"error": "No transcript provided"}), 400
 
-    # Extract action items
     items = extract_action_items(transcript, meeting_name)
     if not items:
         return jsonify({"error": "No action items extracted"}), 400
 
-    # Compute meeting score
     duration_str = request.form.get("duration", "")
     duration_minutes = int(duration_str) if duration_str.isdigit() else None
     score_result = compute_meeting_score(transcript, items, duration_minutes)
