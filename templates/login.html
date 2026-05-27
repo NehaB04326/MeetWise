@@ -1,0 +1,210 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Sign in · MeetingIQ</title>
+    <link href="https://fonts.googleapis.com/css2?family=DM+Sans:opsz,wght@9..40,400;9..40,500;9..40,600&display=swap" rel="stylesheet">
+    <style>
+        *, *::before, *::after { margin: 0; padding: 0; box-sizing: border-box; }
+
+        :root {
+            --navy:    #0d1b2a;
+            --blue:    #2563eb;
+            --blue-dk: #1d4ed8;
+            --border:  #e2e8f0;
+            --surface: #f8fafc;
+            --ink:     #0f172a;
+            --muted:   #64748b;
+            --red-lt:  #fef2f2;
+            --red:     #dc2626;
+            --radius:  10px;
+        }
+
+        body {
+            font-family: 'DM Sans', sans-serif;
+            background: var(--surface);
+            min-height: 100vh;
+            display: flex;
+            flex-direction: column;
+        }
+
+        /* Topbar */
+        .topbar {
+            background: var(--navy);
+            height: 52px;
+            display: flex;
+            align-items: center;
+            padding: 0 2rem;
+            gap: 10px;
+        }
+        .topbar-icon {
+            width: 26px; height: 26px;
+            background: var(--blue);
+            border-radius: 7px;
+            display: flex; align-items: center; justify-content: center;
+        }
+        .topbar-icon svg { width: 14px; height: 14px; }
+        .topbar-name { font-size: 14px; font-weight: 600; color: #fff; letter-spacing: -0.01em; }
+
+        /* Center content */
+        .center {
+            flex: 1;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            padding: 2rem 1.5rem;
+        }
+
+        .login-card {
+            background: #fff;
+            border: 1px solid var(--border);
+            border-radius: 14px;
+            padding: 2rem;
+            width: 100%;
+            max-width: 380px;
+        }
+
+        .card-header {
+            margin-bottom: 1.75rem;
+        }
+        .card-icon {
+            width: 40px; height: 40px;
+            background: var(--navy);
+            border-radius: 10px;
+            display: flex; align-items: center; justify-content: center;
+            margin-bottom: 1rem;
+        }
+        .card-icon svg { width: 20px; height: 20px; }
+        .card-title { font-size: 18px; font-weight: 600; color: var(--ink); letter-spacing: -0.02em; }
+        .card-sub { font-size: 13px; color: var(--muted); margin-top: 4px; }
+
+        /* Flash */
+        .flash {
+            background: var(--red-lt);
+            border: 1px solid #fecaca;
+            border-radius: var(--radius);
+            padding: 9px 12px;
+            font-size: 13px;
+            color: var(--red);
+            margin-bottom: 1.25rem;
+            display: flex;
+            align-items: center;
+            gap: 7px;
+        }
+        .flash svg { width: 14px; height: 14px; flex-shrink: 0; }
+
+        /* Form */
+        .fg { display: flex; flex-direction: column; gap: 5px; margin-bottom: 1rem; }
+        label { font-size: 12px; font-weight: 500; color: var(--muted); }
+
+        input[type=password] {
+            width: 100%;
+            padding: 9px 12px;
+            border: 1px solid var(--border);
+            border-radius: var(--radius);
+            font-family: 'DM Sans', sans-serif;
+            font-size: 14px;
+            color: var(--ink);
+            background: #fff;
+            transition: border-color 0.15s, box-shadow 0.15s;
+        }
+        input[type=password]:focus {
+            outline: none;
+            border-color: var(--blue);
+            box-shadow: 0 0 0 3px rgba(37,99,235,0.1);
+        }
+
+        .btn-submit {
+            width: 100%;
+            background: var(--blue);
+            color: white;
+            border: none;
+            padding: 10px;
+            border-radius: var(--radius);
+            font-family: 'DM Sans', sans-serif;
+            font-size: 14px;
+            font-weight: 500;
+            cursor: pointer;
+            transition: background 0.15s;
+            margin-top: 0.25rem;
+        }
+        .btn-submit:hover { background: var(--blue-dk); }
+
+        .hint {
+            margin-top: 1.25rem;
+            padding-top: 1.25rem;
+            border-top: 1px solid var(--border);
+            font-size: 12px;
+            color: var(--muted);
+            display: flex;
+            align-items: center;
+            gap: 6px;
+        }
+        .hint svg { width: 13px; height: 13px; flex-shrink: 0; }
+        .hint code {
+            background: var(--surface);
+            border: 1px solid var(--border);
+            border-radius: 5px;
+            padding: 1px 6px;
+            font-size: 11px;
+            color: var(--ink);
+        }
+    </style>
+</head>
+<body>
+
+<div class="topbar">
+    <div class="topbar-icon">
+        <svg viewBox="0 0 14 14" fill="none" stroke="white" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round">
+            <rect x="1" y="1" width="12" height="12" rx="2"/>
+            <path d="M4 7h6M4 4.5h3.5M4 9.5h4.5"/>
+        </svg>
+    </div>
+    <span class="topbar-name">MeetingIQ</span>
+</div>
+
+<div class="center">
+    <div class="login-card">
+        <div class="card-header">
+            <div class="card-icon">
+                <svg viewBox="0 0 20 20" fill="none" stroke="white" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round">
+                    <rect x="3" y="3" width="14" height="14" rx="2"/>
+                    <path d="M7 7h6M7 10h4M7 13h2"/>
+                </svg>
+            </div>
+            <div class="card-title">Sign in to MeetingIQ</div>
+            <div class="card-sub">Enter your password to access the dashboard.</div>
+        </div>
+
+        {% with messages = get_flashed_messages(with_categories=true) %}
+            {% for category, message in messages %}
+            <div class="flash">
+                <svg viewBox="0 0 14 14" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round">
+                    <circle cx="7" cy="7" r="6"/><path d="M7 4.5v3M7 9.5v.5"/>
+                </svg>
+                {{ message }}
+            </div>
+            {% endfor %}
+        {% endwith %}
+
+        <form method="post">
+            <div class="fg">
+                <label for="password">Password</label>
+                <input type="password" id="password" name="password" placeholder="Enter password" autofocus required>
+            </div>
+            <button type="submit" class="btn-submit">Sign in</button>
+        </form>
+
+        <div class="hint">
+            <svg viewBox="0 0 14 14" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round">
+                <rect x="2" y="6" width="10" height="7" rx="1.5"/>
+                <path d="M4.5 6V4.5a2.5 2.5 0 0 1 5 0V6"/>
+            </svg>
+           
+        </div>
+    </div>
+</div>
+
+</body>
+</html>

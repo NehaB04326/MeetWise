@@ -1,0 +1,11 @@
+Flask==2.3.3
+flask-login==0.6.2
+groq==0.4.2
+slack_sdk==3.21.3
+python-dotenv==1.0.0
+APScheduler==3.10.4
+fuzzywuzzy==0.18.0
+python-Levenshtein==0.23.0
+requests==2.31.0
+pytz==2023.3
+gunicorn==21.2.0

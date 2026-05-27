@@ -1,0 +1,485 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Dashboard · MeetingIQ</title>
+    <link href="https://fonts.googleapis.com/css2?family=DM+Sans:opsz,wght@9..40,400;9..40,500;9..40,600&family=DM+Mono:wght@400;500&display=swap" rel="stylesheet">
+    <style>
+        *, *::before, *::after { margin: 0; padding: 0; box-sizing: border-box; }
+
+        :root {
+            --navy:      #0d1b2a;
+            --blue:      #2563eb;
+            --blue-dk:   #1d4ed8;
+            --blue-lt:   #eff6ff;
+            --border:    #e2e8f0;
+            --surface:   #f8fafc;
+            --white:     #ffffff;
+            --ink:       #374669;
+            --ink-2:     #1e293b;
+            --muted:     #64748b;
+            --green:     #16a34a;
+            --green-lt:  #f0fdf4;
+            --amber:     #d97706;
+            --red:       #dc2626;
+            --red-lt:    #fef2f2;
+            --radius:    10px;
+            --radius-lg: 14px;
+        }
+
+        body {
+            font-family: 'DM Sans', sans-serif;
+            background: var(--surface);
+            color: var(--ink);
+            min-height: 100vh;
+        }
+
+        /* ── Topbar ── */
+        .topbar {
+            background: var(--navy);
+            height: 52px;
+            display: flex;
+            align-items: center;
+            padding: 0 2rem;
+            gap: 10px;
+            position: sticky;
+            top: 0;
+            z-index: 50;
+        }
+        .topbar-icon {
+            width: 26px; height: 26px;
+            background: var(--blue);
+            border-radius: 7px;
+            display: flex; align-items: center; justify-content: center;
+        }
+        .topbar-icon svg { width: 14px; height: 14px; }
+        .topbar-name { font-size: 14px; font-weight: 600; color: #fff; letter-spacing: -0.01em; }
+        .topbar-sep { width: 1px; height: 18px; background: rgba(255,255,255,0.15); margin: 0 8px; }
+        .topbar-sub { font-size: 13px; color: rgba(255,255,255,0.45); flex: 1; }
+        .topbar-logout {
+            font-size: 12.5px;
+            color: rgba(255,255,255,0.5);
+            text-decoration: none;
+            padding: 5px 12px;
+            border: 1px solid rgba(255,255,255,0.12);
+            border-radius: var(--radius);
+            display: flex;
+            align-items: center;
+            gap: 6px;
+            transition: all 0.15s;
+        }
+        .topbar-logout:hover { color: white; border-color: rgba(255,255,255,0.25); background: rgba(255,255,255,0.07); }
+        .topbar-logout svg { width: 13px; height: 13px; }
+
+        /* ── Page ── */
+        .page {
+            max-width: 840px;
+            margin: 0 auto;
+            padding: 2.5rem 1.5rem 4rem;
+        }
+
+        .page-header { margin-bottom: 2rem; }
+        .page-title { font-size: 22px; font-weight: 600; color: var(--ink); letter-spacing: -0.02em; }
+        .page-sub { font-size: 13.5px; color: var(--muted); margin-top: 4px; }
+
+        /* ── Card ── */
+        .card {
+            background: var(--white);
+            border: 1px solid var(--border);
+            border-radius: var(--radius-lg);
+            padding: 1.5rem;
+            margin-bottom: 1.25rem;
+        }
+        .card-title {
+            font-size: 13px;
+            font-weight: 600;
+            color: var(--ink-2);
+            margin-bottom: 1.25rem;
+            padding-bottom: 1rem;
+            border-bottom: 1px solid var(--border);
+            display: flex;
+            align-items: center;
+            gap: 7px;
+        }
+        .card-title svg { color: var(--blue); }
+
+        /* ── Form ── */
+        .form-grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 1rem;
+            margin-bottom: 1.25rem;
+        }
+        .full-width { grid-column: span 2; }
+        .fg { display: flex; flex-direction: column; gap: 5px; }
+
+        label {
+            font-size: 12px;
+            font-weight: 500;
+            color: var(--muted);
+            letter-spacing: 0.01em;
+        }
+
+        input[type=text],
+        input[type=number],
+        textarea {
+            width: 100%;
+            padding: 9px 12px;
+            border: 1px solid var(--border);
+            border-radius: var(--radius);
+            font-family: 'DM Sans', sans-serif;
+            font-size: 13.5px;
+            color: var(--ink);
+            background: var(--white);
+            transition: border-color 0.15s, box-shadow 0.15s;
+        }
+        input[type=text]:focus,
+        input[type=number]:focus,
+        textarea:focus {
+            outline: none;
+            border-color: var(--blue);
+            box-shadow: 0 0 0 3px rgba(37,99,235,0.1);
+        }
+        textarea {
+            resize: vertical;
+            font-family: 'DM Mono', monospace;
+            font-size: 12.5px;
+            line-height: 1.65;
+            min-height: 130px;
+            background: #fafbfc;
+        }
+        input[type=file] {
+            width: 100%;
+            padding: 8px 12px;
+            border: 1px dashed var(--border);
+            border-radius: var(--radius);
+            font-family: 'DM Sans', sans-serif;
+            font-size: 13px;
+            color: var(--muted);
+            background: var(--surface);
+            cursor: pointer;
+        }
+        .input-hint { font-size: 11px; color: var(--muted); margin-top: 3px; }
+
+        /* ── Buttons ── */
+        .btn {
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            gap: 7px;
+            padding: 9px 20px;
+            border-radius: var(--radius);
+            font-family: 'DM Sans', sans-serif;
+            font-size: 13.5px;
+            font-weight: 500;
+            cursor: pointer;
+            border: none;
+            transition: all 0.15s;
+            width: 100%;
+        }
+        .btn-primary { background: var(--blue); color: white; }
+        .btn-primary:hover { background: var(--blue-dk); }
+        .btn-ghost {
+            background: var(--white);
+            color: var(--ink-2);
+            border: 1px solid var(--border);
+        }
+        .btn-ghost:hover { background: var(--surface); }
+        .action-buttons { display: flex; gap: 10px; margin-top: 0.75rem; }
+        .action-buttons .btn { flex: 1; }
+        button:disabled { opacity: 0.6; cursor: not-allowed; }
+
+        /* ── Loader ── */
+        .loader {
+            width: 14px; height: 14px;
+            border: 2px solid rgba(255,255,255,0.3);
+            border-top-color: white;
+            border-radius: 50%;
+            animation: spin 0.55s linear infinite;
+        }
+        @keyframes spin { to { transform: rotate(360deg); } }
+
+        /* ── Result ── */
+        #resultContainer { display: none; }
+        .result-header {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            margin-bottom: 1rem;
+            flex-wrap: wrap;
+            gap: 8px;
+        }
+        .result-title { font-size: 13px; font-weight: 600; color: var(--ink-2); }
+        .status-pill {
+            font-size: 11px;
+            font-weight: 500;
+            padding: 3px 10px;
+            border-radius: 20px;
+            background: var(--green-lt);
+            color: var(--green);
+        }
+        .status-pill.err { background: var(--red-lt); color: var(--red); }
+
+        .result-area {
+            background: #f1f5f9;
+            border: 1px solid var(--border);
+            border-radius: var(--radius);
+            padding: 1rem;
+            font-family: 'DM Mono', monospace;
+            font-size: 12px;
+            color: var(--ink-2);
+            white-space: pre-wrap;
+            word-break: break-word;
+            line-height: 1.7;
+            max-height: 320px;
+            overflow-y: auto;
+        }
+
+        /* ── Score ── */
+        .score-section {
+            margin-top: 1.25rem;
+            border-top: 1px solid var(--border);
+            padding-top: 1.25rem;
+            display: none;
+        }
+        .score-inner {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 1.5rem;
+            align-items: flex-start;
+        }
+        .score-left { min-width: 120px; }
+        .score-number {
+            font-size: 44px;
+            font-weight: 600;
+            color: var(--ink);
+            letter-spacing: -0.04em;
+            line-height: 1;
+        }
+        .score-denom { font-size: 16px; color: var(--muted); }
+        .score-label { font-size: 12px; color: var(--muted); margin-top: 5px; }
+        .score-bar-wrap { height: 4px; background: var(--border); border-radius: 20px; overflow: hidden; margin-top: 8px; }
+        .score-bar-fill { height: 100%; border-radius: 20px; transition: width 0.5s ease; }
+
+        .score-pills { display: flex; flex-wrap: wrap; gap: 8px; flex: 1; align-items: flex-start; padding-top: 4px; }
+        .score-pill {
+            background: var(--surface);
+            border: 1px solid var(--border);
+            border-radius: 20px;
+            padding: 5px 12px;
+            font-size: 12px;
+            color: var(--muted);
+        }
+        .score-pill strong { color: var(--ink-2); font-weight: 500; }
+
+        /* ── Footer ── */
+        .footer {
+            text-align: center;
+            font-size: 12px;
+            color: var(--muted);
+            margin-top: 2.5rem;
+            padding-top: 1.5rem;
+            border-top: 1px solid var(--border);
+        }
+
+        /* ── Responsive ── */
+        @media (max-width: 600px) {
+            .form-grid { grid-template-columns: 1fr; }
+            .full-width { grid-column: span 1; }
+            .action-buttons { flex-direction: column; }
+            .page { padding: 1.5rem 1rem 3rem; }
+            .topbar { padding: 0 1rem; }
+        }
+    </style>
+</head>
+<body>
+
+<!-- Topbar -->
+<nav class="topbar">
+    <div class="topbar-icon">
+        <svg viewBox="0 0 14 14" fill="none" stroke="white" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round">
+            <rect x="1" y="1" width="12" height="12" rx="2"/>
+            <path d="M4 7h6M4 4.5h3.5M4 9.5h4.5"/>
+        </svg>
+    </div>
+    <span class="topbar-name">MeetingIQ</span>
+    <div class="topbar-sep"></div>
+    <span class="topbar-sub">Action Tracker</span>
+    <a href="/logout" class="topbar-logout">
+        <svg viewBox="0 0 14 14" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round">
+            <path d="M5 7h7M9.5 4.5L12 7l-2.5 2.5"/><path d="M5 2H3a1 1 0 0 0-1 1v8a1 1 0 0 0 1 1h2"/>
+        </svg>
+        Sign out
+    </a>
+</nav>
+
+<div class="page">
+
+    <div class="page-header">
+        <h1 class="page-title">Meeting Action Intelligence</h1>
+        <p class="page-sub">Upload a transcript — AI extracts action items and sends Slack reminders with an effectiveness score.</p>
+    </div>
+
+    <!-- Upload card -->
+    <div class="card">
+        <div class="card-title">
+            <svg width="14" height="14" viewBox="0 0 14 14" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round">
+                <path d="M8 1H3a1 1 0 0 0-1 1v10a1 1 0 0 0 1 1h8a1 1 0 0 0 1-1V5L8 1z"/>
+                <polyline points="8 1 8 5 12 5"/>
+            </svg>
+            New transcript
+        </div>
+
+        <form id="uploadForm" enctype="multipart/form-data">
+            <div class="form-grid">
+                <div class="fg">
+                    <label for="meeting_name">Meeting name</label>
+                    <input type="text" id="meeting_name" name="meeting_name" placeholder="e.g. Q2 Product Sync">
+                </div>
+                <div class="fg">
+                    <label for="duration">Duration (minutes)</label>
+                    <input type="number" id="duration" name="duration" placeholder="45" value="45">
+                </div>
+                <div class="fg full-width">
+                    <label for="transcript">Transcript text</label>
+                    <textarea id="transcript" name="transcript" placeholder="Paste meeting conversation here...&#10;&#10;"></textarea>
+                    <span class="input-hint">Supports structured or unstructured conversation formats.</span>
+                </div>
+                <div class="fg full-width">
+                    <label for="file">Or upload a .txt file</label>
+                    <input type="file" id="file" name="file" accept=".txt">
+                    <span class="input-hint">Plain text files only. Max 2 MB.</span>
+                </div>
+            </div>
+
+            <button type="submit" class="btn btn-primary" id="processBtn">
+                <svg width="13" height="13" viewBox="0 0 14 14" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M1 7l3.5 3.5L13 2"/></svg>
+                Process transcript
+            </button>
+        </form>
+
+        <div class="action-buttons">
+            <button id="checkScoreBtn" class="btn btn-ghost">
+                <svg width="13" height="13" viewBox="0 0 14 14" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"><polyline points="1 10 5 6 9 8 13 3"/></svg>
+                Show last meeting score
+            </button>
+        </div>
+    </div>
+
+    <!-- Result card -->
+    <div id="resultContainer">
+        <div class="card">
+            <div class="result-header">
+                <span class="result-title">Extracted action items</span>
+                <span id="statusPill" class="status-pill">Processed</span>
+            </div>
+            <div id="resultContent" class="result-area"></div>
+
+            <!-- Score -->
+            <div class="score-section" id="scoreSection">
+                <div class="score-inner">
+                    <div class="score-left">
+                        <div style="display:flex; align-items:flex-end; gap:4px;">
+                            <div class="score-number" id="scoreNum">—</div>
+                            <div class="score-denom">/100</div>
+                        </div>
+                        <div class="score-label" id="scoreLabel">Effectiveness score</div>
+                        <div class="score-bar-wrap" style="width:100px; margin-top:8px;">
+                            <div class="score-bar-fill" id="scoreBar" style="width:0%;background:var(--blue);"></div>
+                        </div>
+                    </div>
+                    <div class="score-pills" id="scorePills"></div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+   
+
+</div>
+
+<script>
+    let lastScoreData = null;
+    const processBtn      = document.getElementById('processBtn');
+    const resultContainer = document.getElementById('resultContainer');
+    const resultContent   = document.getElementById('resultContent');
+    const scoreSection    = document.getElementById('scoreSection');
+    const scoreNum        = document.getElementById('scoreNum');
+    const scoreLabel      = document.getElementById('scoreLabel');
+    const scoreBar        = document.getElementById('scoreBar');
+    const scorePills      = document.getElementById('scorePills');
+    const statusPill      = document.getElementById('statusPill');
+
+    function setLoading(on) {
+        processBtn.disabled = on;
+        processBtn.innerHTML = on
+            ? '<span class="loader"></span> Processing...'
+            : '<svg width="13" height="13" viewBox="0 0 14 14" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M1 7l3.5 3.5L13 2"/></svg> Process transcript';
+    }
+
+    function scoreColor(s) {
+        return s >= 70 ? '#16a34a' : s >= 50 ? '#d97706' : '#dc2626';
+    }
+    function scoreGrade(s) {
+        return s >= 80 ? 'Excellent' : s >= 65 ? 'Good' : s >= 50 ? 'Fair' : 'Needs improvement';
+    }
+
+    function renderScore(score, b) {
+        const color = scoreColor(score);
+        scoreNum.textContent = score;
+        scoreNum.style.color = color;
+        scoreBar.style.width = score + '%';
+        scoreBar.style.background = color;
+        scoreLabel.textContent = scoreGrade(score) + ' effectiveness';
+        scorePills.innerHTML = `
+            <div class="score-pill">Decisions &nbsp;<strong>${b.decisions} (${b.decision_score} pts)</strong></div>
+            <div class="score-pill">Owners &nbsp;<strong>${b.items_with_owner}/${b.total_items} (${b.owner_score} pts)</strong></div>
+            <div class="score-pill">Deadlines &nbsp;<strong>${b.items_with_deadline}/${b.total_items} (${b.deadline_score} pts)</strong></div>
+            <div class="score-pill">Duration penalty &nbsp;<strong>−${Math.abs(b.duration_penalty)} pts</strong></div>
+        `;
+        scoreSection.style.display = 'block';
+    }
+
+    document.getElementById('uploadForm').addEventListener('submit', async (e) => {
+        e.preventDefault();
+        setLoading(true);
+        const formData = new FormData(e.target);
+        try {
+            const res  = await fetch('/upload', { method: 'POST', body: formData });
+            const data = await res.json();
+            if (!res.ok) throw new Error(data.error || 'Upload failed');
+            resultContent.textContent = JSON.stringify(data, null, 2);
+            statusPill.className  = 'status-pill';
+            statusPill.textContent = 'Processed · ' + new Date().toLocaleTimeString();
+            if (data.score !== undefined) {
+                lastScoreData = { score: data.score, breakdown: data.score_breakdown };
+                renderScore(data.score, data.score_breakdown);
+            } else {
+                scoreSection.style.display = 'none';
+            }
+            resultContainer.style.display = 'block';
+        } catch (err) {
+            resultContent.textContent = 'Error: ' + err.message;
+            statusPill.className  = 'status-pill err';
+            statusPill.textContent = 'Error';
+            scoreSection.style.display = 'none';
+            resultContainer.style.display = 'block';
+        } finally {
+            setLoading(false);
+        }
+    });
+
+    document.getElementById('checkScoreBtn').addEventListener('click', () => {
+        if (!lastScoreData) { alert('No score available. Process a transcript first.'); return; }
+        renderScore(lastScoreData.score, lastScoreData.breakdown);
+        statusPill.className  = 'status-pill';
+        statusPill.textContent = 'Score recalled';
+        if (!resultContent.textContent.trim()) {
+            resultContent.textContent = 'No transcript processed yet. Score from last session shown below.';
+        }
+        resultContainer.style.display = 'block';
+    });
+</script>
+</body>
+</html>
