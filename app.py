@@ -7,7 +7,7 @@ load_dotenv()
 
 from flask import Flask, request, render_template, jsonify, redirect, url_for, flash
 from flask_login import LoginManager, UserMixin, login_user, logout_user, login_required, current_user
-from thefuzz import process   # <-- changed from fuzzywuzzy
+from thefuzz import process   # pure Python fuzzy matching
 import secrets
 
 from database import init_db, add_action_item, mark_completed
@@ -67,10 +67,17 @@ def get_name_mapping():
         return {row['raw_name']: row['slack_id'] for row in rows}
 
 def resolve_slack_id(person_raw):
+    """Return Slack ID for a person name using case‑insensitive exact match first, then fuzzy."""
     mapping = get_name_mapping()
-    if person_raw.lower() in mapping:
-        return mapping[person_raw.lower()]
-    best_match = process.extractOne(person_raw.lower(), mapping.keys(), score_cutoff=70)
+    if not mapping:
+        return None
+    # 1. Case‑insensitive exact match
+    lower_person = person_raw.lower()
+    for key, sid in mapping.items():
+        if key.lower() == lower_person:
+            return sid
+    # 2. Fuzzy matching on original keys (case‑sensitive but fuzzy handles variations)
+    best_match = process.extractOne(person_raw, mapping.keys(), score_cutoff=70)
     if best_match:
         return mapping[best_match[0]]
     return None
