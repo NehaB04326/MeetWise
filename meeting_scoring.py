@@ -8,11 +8,9 @@ def compute_meeting_score(transcript, extracted_items, duration_minutes=None):
     - action_items: quality of items (owner, deadline)
     - duration penalty if over 60 min
     """
-    # 1. Decisions (rough keyword count)
     decisions = transcript.lower().count("decision") + transcript.lower().count("agreed")
     decision_score = min(decisions * 10, 30)   # max 30 points
     
-    # 2. Action item quality
     total_items = len(extracted_items)
     items_with_owner = sum(1 for i in extracted_items if i.get('person') and i.get('person') != 'unassigned')
     items_with_deadline = sum(1 for i in extracted_items if i.get('deadline'))
@@ -21,7 +19,6 @@ def compute_meeting_score(transcript, extracted_items, duration_minutes=None):
     deadline_score = (items_with_deadline / max(total_items, 1)) * 25   # max 25
     item_count_score = min(total_items * 5, 20)   # max 20
     
-    # 3. Duration penalty
     duration_penalty = 0
     if duration_minutes:
         if duration_minutes > 90:
