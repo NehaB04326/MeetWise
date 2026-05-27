@@ -33,7 +33,7 @@
             min-height: 100vh;
         }
 
-        /* ── Topbar (fully visible text) ── */
+        /* ── Topbar with highlighted logout ── */
         .topbar {
             background: var(--navy);
             height: 52px;
@@ -57,7 +57,7 @@
         .topbar-name { 
             font-size: 15px; 
             font-weight: 600; 
-            color: #ffffff;   /* pure white */
+            color: #ffffff;
             letter-spacing: -0.01em;
         }
         .topbar-sep { 
@@ -68,29 +68,35 @@
         }
         .topbar-sub { 
             font-size: 13px; 
-            color: #e2e8f0;   /* light but readable */
+            color: #e2e8f0;
             font-weight: 500;
         }
+        /* Highlighted sign out button */
         .topbar-logout {
-            font-size: 12.5px;
-            color: #f1f5f9;   /* bright, readable */
+            font-size: 13px;
+            font-weight: 600;
+            color: #ffffff;
             text-decoration: none;
-            padding: 5px 12px;
-            border: 1px solid rgba(255,255,255,0.2);
+            padding: 5px 14px;
+            border: 1px solid rgba(255,255,255,0.4);
             border-radius: var(--radius);
+            background: rgba(37,99,235,0.2);
+            backdrop-filter: blur(2px);
             display: flex;
             align-items: center;
-            gap: 6px;
-            transition: all 0.15s;
+            gap: 8px;
+            transition: all 0.2s ease;
+            letter-spacing: 0.3px;
         }
         .topbar-logout:hover { 
-            color: white; 
-            border-color: rgba(255,255,255,0.5); 
-            background: rgba(255,255,255,0.1); 
+            background: rgba(37,99,235,0.5); 
+            border-color: rgba(255,255,255,0.7);
+            color: white;
+            transform: translateY(-1px);
         }
-        .topbar-logout svg { width: 13px; height: 13px; stroke: currentColor; }
+        .topbar-logout svg { width: 14px; height: 14px; stroke: white; }
 
-        /* rest of the page unchanged – keep your existing styles for card, form, etc. */
+        /* Rest of the styles (unchanged from your version) */
         .page {
             max-width: 840px;
             margin: 0 auto;
@@ -297,7 +303,8 @@
             <path d="M4 7h6M4 4.5h3.5M4 9.5h4.5"/>
         </svg>
     </div>
-    <span class="topbar-name">MeetingIQ</span>
+    <!-- Changed from "MeetingIQ" to "MeetWise" -->
+    <span class="topbar-name">MeetWise</span>
     <div class="topbar-sep"></div>
     <span class="topbar-sub">Action Tracker</span>
     <a href="/logout" class="topbar-logout">
