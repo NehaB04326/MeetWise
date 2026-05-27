@@ -17,8 +17,8 @@ cursor = conn.cursor()
 #   - It looks like: U04ABCDEFG
 
 real_slack_ids = {
-    "Neha":  "U0B6Q9E58UQ",  
-    "ABC": "U0B5WH22TT8",  
+    "john":  "U0B6Q9E58UQ",   # ← replace with actual ID for John
+    "sarah": "U0B5WH22TT8",  # ← replace with actual ID for Sarah
     "alex":  "U04YOUR_ALEX_ID"    # ← replace with actual ID for Alex
 }
 
