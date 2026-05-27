@@ -16,8 +16,7 @@ from gpt_extractor import extract_action_items
 from slack_client import send_action_dm
 from meeting_scoring import compute_meeting_score
 
-# ------------------------------------------------------------
-# Force sync of name_mapping from SLACK_USER_* environment variables
+
 def sync_name_mapping():
     from database import get_db
     mapping = {}
@@ -36,14 +35,13 @@ def sync_name_mapping():
                 (raw_name, slack_id)
             )
         print(f"Synced {len(mapping)} Slack user mapping(s) from environment variables.")
-# ------------------------------------------------------------
 
 init_db()
 sync_name_mapping()   # runs every startup, ensures mapping is up‑to‑date
 
 app = Flask(__name__)
 
-# ------------------ AUTH SETUP ------------------
+
 app.secret_key = os.getenv("SECRET_KEY", secrets.token_hex(32))
 
 login_manager = LoginManager()
