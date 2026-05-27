@@ -13,5 +13,3 @@ def job_weekly_report():
 
 scheduler = BackgroundScheduler()
 scheduler.add_job(func=job_weekly_report, trigger="cron", day_of_week="mon", hour=9, minute=0)
-
-# scheduler.start() is called in app.py to avoid double start
