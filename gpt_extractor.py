@@ -1,4 +1,4 @@
-# gpt_extractor.py - Hinglish‑aware version using requests (no Groq SDK)
+
 import os
 import json
 import requests
