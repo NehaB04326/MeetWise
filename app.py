@@ -7,7 +7,7 @@ load_dotenv()
 
 from flask import Flask, request, render_template, jsonify, redirect, url_for, flash
 from flask_login import LoginManager, UserMixin, login_user, logout_user, login_required, current_user
-from fuzzywuzzy import process
+from thefuzz import process   # <-- changed from fuzzywuzzy
 import secrets
 
 from database import init_db, add_action_item, mark_completed
@@ -75,7 +75,7 @@ def resolve_slack_id(person_raw):
         return mapping[best_match[0]]
     return None
 
-@app.route("/", methods=["GET", "POST"])   # <<< FIXED
+@app.route("/", methods=["GET", "POST"])
 @login_required
 def index():
     if request.method == "POST":
