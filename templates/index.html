@@ -33,7 +33,7 @@
             min-height: 100vh;
         }
 
-        /* ── Topbar with highlighted logout ── */
+        /* Topbar with logout on the right */
         .topbar {
             background: var(--navy);
             height: 52px;
@@ -71,8 +71,9 @@
             color: #e2e8f0;
             font-weight: 500;
         }
-        /* Highlighted sign out button */
+        /* Sign out button – pushed to right */
         .topbar-logout {
+            margin-left: auto;   /* positions at far right */
             font-size: 13px;
             font-weight: 600;
             color: #ffffff;
@@ -96,7 +97,7 @@
         }
         .topbar-logout svg { width: 14px; height: 14px; stroke: white; }
 
-        /* Rest of the styles (unchanged from your version) */
+        /* Rest of the styles (unchanged) */
         .page {
             max-width: 840px;
             margin: 0 auto;
@@ -303,7 +304,6 @@
             <path d="M4 7h6M4 4.5h3.5M4 9.5h4.5"/>
         </svg>
     </div>
-    <!-- Changed from "MeetingIQ" to "MeetWise" -->
     <span class="topbar-name">MeetWise</span>
     <div class="topbar-sep"></div>
     <span class="topbar-sub">Action Tracker</span>
