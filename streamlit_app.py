@@ -4,22 +4,17 @@ import pandas as pd
 from datetime import datetime
 from dotenv import load_dotenv
 
-# Import your existing modules
 from gpt_extractor import extract_action_items
 from meeting_scoring import compute_meeting_score
 from slack_client import send_action_dm  # we'll modify this to send plain message
 
-# Load environment variables
 load_dotenv()
 
-# Page configuration
 st.set_page_config(page_title="Meeting Action Tracker", page_icon="🎯", layout="wide")
 
-# Title and description
 st.title("🎯 Meeting Action Intelligence Platform")
 st.markdown("Upload a meeting transcript – AI extracts action items, assigns owners, calculates meeting effectiveness, and sends Slack reminders.")
 
-# Sidebar for configuration
 with st.sidebar:
     st.header("⚙️ Configuration")
     st.info("Make sure your `.env` file contains `GROQ_API_KEY`, `SLACK_BOT_TOKEN`, and `BASE_URL` (if using Slack).")
@@ -28,7 +23,6 @@ with st.sidebar:
     if not os.getenv("SLACK_BOT_TOKEN"):
         st.warning("SLACK_BOT_TOKEN not set – Slack notifications disabled.")
 
-# Main input area
 col1, col2 = st.columns([2, 1])
 with col1:
     meeting_name = st.text_input("Meeting name", value="Sprint Planning")
@@ -40,7 +34,6 @@ with col2:
     duration = st.number_input("Meeting duration (minutes)", min_value=0, value=45, step=5)
     process_button = st.button("🚀 Process Transcript", type="primary", use_container_width=True)
 
-# Process when button clicked
 if process_button:
     if uploaded_file is not None:
         transcript = uploaded_file.read().decode("utf-8")
@@ -49,30 +42,24 @@ if process_button:
         st.stop()
     
     with st.spinner("AI is extracting action items and calculating score..."):
-        # Extract action items using Groq
         items = extract_action_items(transcript, meeting_name)
         
         if not items:
             st.error("No action items extracted. Please check the transcript format.")
             st.stop()
         
-        # Compute meeting score
         score_result = compute_meeting_score(transcript, items, duration)
         
-        # Display action items in a nice table
         st.subheader("📋 Extracted Action Items")
         df = pd.DataFrame(items)
-        # Rename columns for display
         if not df.empty:
             df = df.rename(columns={"task": "Task", "person": "Owner", "deadline": "Deadline"})
             st.dataframe(df, use_container_width=True)
         
-        # Display meeting score with a gauge
         st.subheader("📊 Meeting Effectiveness Score")
         score = score_result["score"]
         breakdown = score_result["breakdown"]
         
-        # Create columns for metric and details
         col_a, col_b = st.columns([1, 2])
         with col_a:
             # Show score with big font
@@ -85,7 +72,6 @@ if process_button:
             - **Duration penalty:** {breakdown['duration_penalty']} pts
             """)
         
-        # Send Slack notifications
         st.subheader("📬 Slack Notifications")
         if os.getenv("SLACK_BOT_TOKEN"):
             slack_sent = 0
@@ -110,6 +96,5 @@ if process_button:
         
         # Optionally save to database – omitted for brevity
 
-# Footer
 st.markdown("---")
 st.caption("Powered by Groq LLM and Slack API")
